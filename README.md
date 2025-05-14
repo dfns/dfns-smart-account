@@ -1,3 +1,9 @@
+# Dfns Smart Account
+
+This smart contract is heavily inspired from the SafeLite example: https://github.com/5afe/safe-eip7702/blob/main/safe-eip7702-contracts/contracts/experimental/SafeLite.sol
+It was stripped from all unecessary logic to only keep the batch functionality.
+It uses no dependency and rely on some assembly code to save gas usage.
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
@@ -48,7 +54,7 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/DfnsSmartAccount.s.sol:DfnsSmartAccount --legacy --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
 
 ### Cast
