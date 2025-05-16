@@ -111,4 +111,8 @@ contract DfnsSmartAccount {
             $.slot := _STORAGE
         }
     }
+
+    function getNonce() external view returns (uint256) {
+        return _storage().nonce;
+    }
 }
