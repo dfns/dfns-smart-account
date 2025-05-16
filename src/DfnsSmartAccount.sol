@@ -12,14 +12,11 @@ contract DfnsSmartAccount {
     }
 
     // keccak256("DfnsSmartAccount") & (~0xff)
-    bytes32 private constant _STORAGE =
-        0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000;
+    bytes32 private constant _STORAGE = 0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000;
     // keccak256("EIP712Domain(uint256 chainId,address verifyingContract)");
-    bytes32 private constant _DOMAIN_TYPEHASH =
-        0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
+    bytes32 private constant _DOMAIN_TYPEHASH = 0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
     // keccak256("HandleOps(bytes32 data,uint256 nonce)")
-    bytes32 private constant _HANDLEOPS_TYPEHASH =
-        0x4f8bb4631e6552ac29b9d6bacf60ff8b5481e2af7c2104fe0261045fa6988111;
+    bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4f8bb4631e6552ac29b9d6bacf60ff8b5481e2af7c2104fe0261045fa6988111;
 
     address private immutable ENTRY_POINT;
 
@@ -31,24 +28,14 @@ contract DfnsSmartAccount {
      * @param r The r part of the signature.
      * @param vs The v and s part of the signature.
      */
-    function handleOps(
-        bytes memory userOps,
-        uint256 r,
-        uint256 vs
-    ) public payable {
+    function handleOps(bytes memory userOps, uint256 r, uint256 vs) public payable {
         Storage storage $ = _storage();
         uint256 nonce = $.nonce;
 
         // Calculate the hash of transactions data and nonce for signature verification
-        bytes32 domainSeparator = keccak256(
-            abi.encode(_DOMAIN_TYPEHASH, block.chainid, address(this))
-        );
-        bytes32 structHash = keccak256(
-            abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce)
-        );
-        bytes32 digest = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
-        );
+        bytes32 domainSeparator = keccak256(abi.encode(_DOMAIN_TYPEHASH, block.chainid, address(this)));
+        bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce));
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 
         // Verify the signature
         require(_isValidSignature(digest, r, vs), InvalidSignature());
@@ -62,11 +49,7 @@ contract DfnsSmartAccount {
         assembly ("memory-safe") {
             let length := mload(userOps)
             let i := 0x20
-            for {
-
-            } lt(i, length) {
-
-            } {
+            for {} lt(i, length) {} {
                 let to := shr(0x60, mload(add(userOps, i)))
                 let value := mload(add(userOps, add(i, 0x14)))
                 let dataLength := mload(add(userOps, add(i, 0x34)))
@@ -90,19 +73,12 @@ contract DfnsSmartAccount {
      * @param vs The v and s part of the signature combined.
      * @return bool True if the signature is valid, false otherwise.
      */
-    function _isValidSignature(
-        bytes32 hash,
-        uint256 r,
-        uint256 vs
-    ) internal view returns (bool) {
+    function _isValidSignature(bytes32 hash, uint256 r, uint256 vs) internal view returns (bool) {
         unchecked {
             uint256 v = (vs >> 255) + 27;
-            uint256 s = vs &
-                0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+            uint256 s = vs & 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
-            return
-                address(this) ==
-                ecrecover(hash, uint8(v), bytes32(r), bytes32(s));
+            return address(this) == ecrecover(hash, uint8(v), bytes32(r), bytes32(s));
         }
     }
 
