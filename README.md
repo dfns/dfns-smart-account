@@ -1,8 +1,83 @@
 # Dfns Smart Account
 
+## Introduction
+
 This smart contract is heavily inspired from the SafeLite example: https://github.com/5afe/safe-eip7702/blob/main/safe-eip7702-contracts/contracts/experimental/SafeLite.sol
 It was stripped from all unecessary logic to only keep the batch functionality.
 It uses no dependency and rely on some assembly code to save gas usage.
+
+After deployment, this contract is intended to be called by the [dfns.co](https://dfns.co) WaaS. It will be used for the Fee Sponsor feature:
+A Dfns user can create 2 wallets:
+- Wallet A (sponsor)
+- Wallet B (sponsoree)
+
+`Wallet A` will hold the gas token of the EVM chain (ETH, BNB, ...). `Wallet B` will hold various tokens (ERC20) but not necessarily the native token of the chain.
+With the fee sponsor feature, `Wallet B` will be able to send some tokens without the need of paying the fees, they will be covered by `Wallet A`.
+
+## Execution Steps of a Fee Sponsor Transaction
+
+- Check whether or not `Wallet B` is pointing to the `Dfns Smart Account` contract address, using the `eth_getCode` [RPC Method](https://ethereum-json-rpc.com/?method=eth_getCode). 
+  - If `Wallet B` does not have any code, sign an EIP-7702 Authorization, to make the EOA point to the `Dfns Smart Account` contract
+  - If `Wallet B` already points to the `Dfns Smart Account`, do nothing
+  - If `Wallet B` points to a smart contract which is not the `Dfns Smart Account`, abort the transaction 
+- Build the transaction for `Wallet B` based on the intent of the user, and derive the three parameters: `to`, `value`, `data`, bundle it in the `userOps` data structure and sign it.
+- Build a transaction with `Wallet A`:
+  - Transaction type:
+    - If an EIP-7702 Authorization was signed, add the Signed Authorization to the transaction: this will be a type 4 transaction
+    - If no Authorization was signed, this will be a classic type 2 transaction
+  - the `to` field of the transaction will be the `Wallet B` address
+  - the `value` field will be `0`
+  - the `data` field will be the smart contract call to execute to pass the signed userOps of Step 2 to the `handleOps` method.
+- Broadcast the transaction:
+  - `Wallet A` pays for the fees
+  - `Wallet B` has its intent executed
+
+## UserOps encoding
+
+```typescript
+import { concat, solidityPacked } from 'ethers'
+
+const encodeUserOps = (userOps: { to: string, value: BigInt, data: Uint8Array }[]) => {
+  return concat(userOps.map((userOp) =>
+    solidityPacked(['address', 'uint256', 'uint256', 'bytes'], [userOp.to, userOp.value, BigInt(userOp.data.length), userOp.data])
+  ))
+}
+```
+
+## UserOps signing
+
+```typescript
+import { TypedDataEncoder, keccak256 } from 'ethers'
+
+const types = {
+  HandleOps: [
+    { name: 'data', type: 'bytes32' },
+    { name: 'nonce', type: 'uint256' },
+  ],
+}
+const nonce = await jsonRpcProvider.getStorage(walletBAddress, '0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000')
+const domain = { chainId, verifyingContract: walletBAddress }
+const encodedUserOps = encodeUserOps(userOps)
+const signedUserOps = keccak256(encodedUserOps)
+const message = { data: signedUserOps, nonce }
+const toSign = TypedDataEncoder.hash(domain, types, message)
+const userOpsSignature = sign(toSign) 
+```
+
+## handleOps data
+
+```typescript
+import { Signature } from 'ethers'
+
+const { r, yParityAndS } = Signature.from(userOpsSignature)
+const handleOpsData = new Interface(['function handleOps( bytes memory userOps, uint256 r, uint256 vs ) public payable']).encodeFunctionData('handleOps', [
+  encodedUserOps,
+  r,
+  yParityAndS,
+])
+```
+
+## Deployment
 
 It is deployed on the following chains:
 
@@ -69,12 +144,12 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge create script/DfnsSmartAccount.sol:DfnsSmartAccount --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge create script/DfnsSmartAccount.sol:DfnsSmartAccount --rpc-url <your_rpc_url> --private-key <dummy_private_key>
 ```
 
-copy the input, and use the Dfns API to broadcast the transaction:
+This is a dry run, use a dummy private key as this is not the real deployment. After running the command, forge will output a Transaction with a Json format, copy the "input" field, and use the Dfns API to broadcast the transaction:
 
-`https://{{customerApiDomain}}/wallets/:walletId/transactions`
+`POST https://{{customerApiDomain}}/wallets/:walletId/transactions`
 
 ```json
 {
