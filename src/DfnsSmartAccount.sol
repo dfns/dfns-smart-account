@@ -2,13 +2,15 @@
 pragma solidity =0.8.29;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 /**
  * @title DfnsSmartAccount - This contract support batch execution of transactions.
  * The only storage is a nonce to prevent replay attacks.
  * The contract is intended to be used with EIP-7702 where EOA delegates to this contract.
  */
 
-contract DfnsSmartAccount {
+contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
     using ECDSA for bytes32;
 
     struct Storage {
@@ -92,4 +94,27 @@ contract DfnsSmartAccount {
     function getNonce() external view returns (uint256) {
         return _storage().nonce;
     }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function onERC1155Received(address, address, uint256, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address, address, uint256[] calldata, uint256[] calldata, bytes calldata)
+        external
+        pure
+        returns (bytes4)
+    {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceId) public pure override returns (bool) {
+        return interfaceId == type(IERC1155Receiver).interfaceId || interfaceId == type(IERC721Receiver).interfaceId
+            || interfaceId == 0x01ffc9a7; // IERC165
+    }
+
+    receive() external payable {}
 }

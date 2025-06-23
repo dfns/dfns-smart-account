@@ -33,7 +33,7 @@ contract DfnsSmartAccountTest is Test {
         vm.deal(sponsoree, 100 ether);
         vm.signAndAttachDelegation(contractAddress, sponsoreePrivateKey);
 
-        dfnsSmartAccount = DfnsSmartAccount(sponsoree);
+        dfnsSmartAccount = DfnsSmartAccount(payable(sponsoree));
 
         generateTestVector();
     }
@@ -95,5 +95,11 @@ contract DfnsSmartAccountTest is Test {
 
         vm.expectRevert(OutOfBounds.selector);
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+    }
+
+    function test_sponsoreeCanReceiveEth() public {
+        uint256 initialBalance = sponsoree.balance;
+        payable(sponsoree).transfer(1 ether);
+        assertEq(sponsoree.balance, initialBalance + 1 ether);
     }
 }
