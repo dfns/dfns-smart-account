@@ -14,6 +14,7 @@ contract DfnsSmartAccountTest is Test {
     DfnsSmartAccount public dfnsSmartAccount;
 
     address public constant RANDOM_DESTINATION = 0x09D450BDD08B7eA3E04BCAec52A60124ad386Fca;
+    address public sponsor;
     address public sponsoree;
     uint256 public sponsoreePrivateKey;
 
@@ -34,6 +35,7 @@ contract DfnsSmartAccountTest is Test {
         vm.signAndAttachDelegation(contractAddress, sponsoreePrivateKey);
 
         dfnsSmartAccount = DfnsSmartAccount(payable(sponsoree));
+        sponsor = address(this);
 
         generateTestVector();
     }
@@ -45,13 +47,24 @@ contract DfnsSmartAccountTest is Test {
         encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
 
         uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey);
+        (r, vs) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
     }
 
     function test_handleOps() public {
         assertEq(dfnsSmartAccount.getNonce(), 0);
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
         assertEq(dfnsSmartAccount.getNonce(), 1);
+    }
+
+    function test_handleOpsWrongSponsor() public {
+        assertEq(dfnsSmartAccount.getNonce(), 0);
+        address otherSponsor = address(0xBEEF);
+        vm.deal(otherSponsor, 100 ether);
+        vm.prank(otherSponsor);
+        vm.expectRevert(InvalidSignature.selector);
+        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+        assertEq(dfnsSmartAccount.getNonce(), 0);
     }
 
     function test_handleOpsWrongSignature() public {
@@ -76,7 +89,8 @@ contract DfnsSmartAccountTest is Test {
         encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
 
         uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey);
+        (r, vs) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
 
         vm.expectRevert(InvalidTarget.selector);
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
@@ -91,7 +105,8 @@ contract DfnsSmartAccountTest is Test {
         );
 
         uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey);
+        (r, vs) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
 
         vm.expectRevert(OutOfBounds.selector);
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);

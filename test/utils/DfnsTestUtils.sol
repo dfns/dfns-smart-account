@@ -12,7 +12,7 @@ struct UserOperation {
 library DfnsTestUtils {
     bytes32 private constant _STORAGE = 0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000;
     bytes32 private constant _DOMAIN_TYPEHASH = 0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
-    bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4f8bb4631e6552ac29b9d6bacf60ff8b5481e2af7c2104fe0261045fa6988111;
+    bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4d45d6aca00518e5f826ef561e48d49260fb16644409228c5e739cb8f3c7c68e;
 
     // Signature malleability protection constants
     uint256 private constant CURVE_ORDER = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141;
@@ -34,13 +34,13 @@ library DfnsTestUtils {
         return encoded;
     }
 
-    function computeDigest(bytes memory userOps, uint256 nonce, address contractAddress)
+    function computeDigest(bytes memory userOps, uint256 nonce, address contractAddress, address sponsor)
         internal
         view
         returns (bytes32 digest)
     {
         bytes32 domainSeparator = keccak256(abi.encode(_DOMAIN_TYPEHASH, block.chainid, contractAddress));
-        bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce));
+        bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce, sponsor));
         digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
     }
 
@@ -49,10 +49,11 @@ library DfnsTestUtils {
         bytes memory userOps,
         uint256 nonce,
         address contractAddress,
-        uint256 eoaOwnerPrivateKey
+        uint256 eoaOwnerPrivateKey,
+        address sponsor
     ) internal view returns (uint256 r, uint256 vs) {
         // In EIP-7702 context, the contract calculates digest using EOA address as address(this)
-        bytes32 digest = computeDigest(userOps, nonce, contractAddress);
+        bytes32 digest = computeDigest(userOps, nonce, contractAddress, sponsor);
 
         // Sign with the EOA's private key
         (uint8 v, bytes32 rBytes, bytes32 s) = vm.sign(eoaOwnerPrivateKey, digest);
