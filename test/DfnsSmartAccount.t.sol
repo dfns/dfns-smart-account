@@ -117,4 +117,24 @@ contract DfnsSmartAccountTest is Test {
         payable(sponsoree).transfer(1 ether);
         assertEq(sponsoree.balance, initialBalance + 1 ether);
     }
+
+    function test_isValidSignatureSuccess() public view {
+        bytes32 hash = keccak256("valid");
+        (bytes32 _r, bytes32 _vs) = vm.signCompact(sponsoreePrivateKey, hash);
+        bytes memory signature = abi.encode(_r, _vs);
+        bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
+        bytes4 expectedMagic = 0x1626ba7e;
+        // Should return ERC1271 magic value
+        assertEq(magic, expectedMagic);
+    }
+
+    function test_isValidSignatureFail() public view {
+        bytes32 hash = keccak256("invalid");
+        // Use a random signature that won't match
+        bytes memory signature = abi.encode(uint256(1), uint256(2));
+        bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
+        bytes4 expectedMagic = 0x00000000;
+        // Should return 0 for invalid signature
+        assertEq(magic, expectedMagic);
+    }
 }

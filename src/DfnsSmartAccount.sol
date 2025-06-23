@@ -4,13 +4,14 @@ pragma solidity =0.8.29;
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 /**
  * @title DfnsSmartAccount - This contract support batch execution of transactions.
  * The only storage is a nonce to prevent replay attacks.
  * The contract is intended to be used with EIP-7702 where EOA delegates to this contract.
  */
 
-contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
+contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
     using ECDSA for bytes32;
 
     struct Storage {
@@ -83,6 +84,21 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
             }
         }
         /* solhint-enable no-inline-assembly */
+    }
+
+    /**
+     * @dev ERC-1271: Validates if the provided signature is valid for the given hash.
+     * @param hash The hash of the signed data.
+     * @param signature The signature to validate.
+     * @return magicValue The ERC-1271 magic value (0x1626ba7e) if the signature is valid, 0x00000000 otherwise.
+     */
+    function isValidSignature(bytes32 hash, bytes memory signature) public view returns (bytes4 magicValue) {
+        (uint256 r, uint256 vs) = abi.decode(signature, (uint256, uint256));
+        bool ok = address(this) == hash.recover(bytes32(r), bytes32(vs));
+
+        assembly ("memory-safe") {
+            magicValue := mul(ok, hex"1626ba7e")
+        }
     }
 
     function _storage() private pure returns (Storage storage $) {
