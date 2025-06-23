@@ -21,8 +21,8 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
     bytes32 private constant _STORAGE = 0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000;
     // keccak256("EIP712Domain(uint256 chainId,address verifyingContract)");
     bytes32 private constant _DOMAIN_TYPEHASH = 0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
-    // keccak256("HandleOps(bytes32 data,uint256 nonce)")
-    bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4f8bb4631e6552ac29b9d6bacf60ff8b5481e2af7c2104fe0261045fa6988111;
+    // keccak256("HandleOps(bytes32 data,uint256 nonce,address sponsor)")
+    bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4d45d6aca00518e5f826ef561e48d49260fb16644409228c5e739cb8f3c7c68e;
 
     error InvalidSignature();
     error InvalidTarget();
@@ -40,7 +40,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
 
         // Calculate the hash of transactions data and nonce for signature verification
         bytes32 domainSeparator = keccak256(abi.encode(_DOMAIN_TYPEHASH, block.chainid, address(this)));
-        bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce));
+        bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce, msg.sender));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 
         // Verify the signature
