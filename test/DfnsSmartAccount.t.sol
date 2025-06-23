@@ -9,6 +9,7 @@ import {UserOperation, DfnsTestUtils} from "./utils/DfnsTestUtils.sol";
 error InvalidSignature();
 error InvalidTarget();
 error OutOfBounds();
+error InvalidAuthority();
 
 contract DfnsSmartAccountTest is Test {
     DfnsSmartAccount public dfnsSmartAccount;
@@ -52,6 +53,19 @@ contract DfnsSmartAccountTest is Test {
         assertEq(dfnsSmartAccount.getNonce(), 0);
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
         assertEq(dfnsSmartAccount.getNonce(), 1);
+    }
+
+    function test_handleOpsWithoutSignature() public {
+        assertEq(dfnsSmartAccount.getNonce(), 0);
+        vm.prank(sponsoree);
+        dfnsSmartAccount.handleOps(encodedUserOperations);
+        assertEq(dfnsSmartAccount.getNonce(), 0); // Nonce should not increment without signature
+    }
+
+    function test_handleOpsWithoutSignatureFailure() public {
+        assertEq(dfnsSmartAccount.getNonce(), 0);
+        vm.expectRevert(InvalidAuthority.selector);
+        dfnsSmartAccount.handleOps(encodedUserOperations);
     }
 
     function test_handleOpsWrongSignature() public {

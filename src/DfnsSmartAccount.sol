@@ -27,6 +27,16 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
     error InvalidSignature();
     error InvalidTarget();
     error OutOfBounds();
+    error InvalidAuthority();
+
+    /**
+     * @dev Sends multiple transactions with signature validation and reverts all if one fails.
+     * @param userOps Encoded User Ops.
+     */
+    function handleOps(bytes memory userOps) external payable {
+        require(msg.sender == address(this), InvalidAuthority());
+        _handleOps(userOps);
+    }
 
     /**
      * @dev Sends multiple transactions with signature validation and reverts all if one fails.
@@ -34,7 +44,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
      * @param r The r part of the signature.
      * @param vs The v and s part of the signature.
      */
-    function handleOps(bytes memory userOps, uint256 r, uint256 vs) public payable {
+    function handleOps(bytes memory userOps, uint256 r, uint256 vs) external payable {
         Storage storage $ = _storage();
         uint256 nonce = $.nonce;
 
@@ -51,6 +61,10 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver {
             $.nonce = nonce + 1;
         }
 
+        _handleOps(userOps);
+    }
+
+    function _handleOps(bytes memory userOps) internal {
         /* solhint-disable no-inline-assembly */
         assembly ("memory-safe") {
             let length := mload(userOps)
