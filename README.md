@@ -95,6 +95,8 @@ It is deployed on the following chains:
 | Binance Testnet     | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.bscscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)           |
 | Optimism            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://optimistic.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)       |
 | Optimism Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia-optimism.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code) |
+| Polygon             | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)               |
+| Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
 
 
 ## Foundry
@@ -164,7 +166,7 @@ This is a dry run, use a dummy private key as this is not the real deployment. A
 ```
 
 ```shell
-./verify-all.sh <contract_address> <etherscan_eth_api_key> <etherscan_bnb_api_key> <etherscan_optimism_api_key> <etherscan_base_api_key>
+./verify-all.sh <contract_address> <etherscan_api_key>
 ```
 
 ### Cast
