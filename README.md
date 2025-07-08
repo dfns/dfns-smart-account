@@ -97,6 +97,10 @@ It is deployed on the following chains:
 | Optimism Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia-optimism.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code) |
 | Polygon             | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)               |
 | Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
+| Arbitrum            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                   |
+| Arbitrum Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)           |
+| Berachain           | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                  |
+| Berachain Bepolia   | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
 
 
 ## Foundry
