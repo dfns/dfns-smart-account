@@ -10,6 +10,14 @@ fi
 CONTRACT_ADDRESS=$1
 ETHERSCAN_API_KEY=$2
 
+echo "Verifying contract $CONTRACT_ADDRESS on Berachain networks..."
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain berachain --verifier-api-key $ETHERSCAN_API_KEY --watch 
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain berachain-bepolia --verifier-api-key $ETHERSCAN_API_KEY --watch
+
+echo "Verifying contract $CONTRACT_ADDRESS on Arbitrum networks..."
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain arbitrum --verifier-api-key $ETHERSCAN_API_KEY --watch 
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain arbitrum-sepolia --verifier-api-key $ETHERSCAN_API_KEY --watch
+
 echo "Verifying contract $CONTRACT_ADDRESS on Polygon networks..."
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain polygon --verifier-api-key $ETHERSCAN_API_KEY --watch 
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain amoy --verifier-api-key $ETHERSCAN_API_KEY --watch
