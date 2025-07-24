@@ -83,24 +83,26 @@ const handleOpsData = new Interface(['function handleOps( bytes memory userOps, 
 
 It is deployed on the following chains:
 
-| Blockchain          | Contract Address                                                                                                                            |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ethereum Mainnet    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                  |
-| Ethereum Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
-| Ethereum Holesky    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://holesky.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
-| Ethereum Hoodi      | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://hoodi.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)            |
-| Base                | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://basescan.org/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                  |
-| Base Sepolia        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.basescan.org/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
-| Binance Smart Chain | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://bscscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                   |
-| Binance Testnet     | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.bscscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)           |
-| Optimism            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://optimistic.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)       |
-| Optimism Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia-optimism.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code) |
-| Polygon             | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)               |
-| Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
-| Arbitrum            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                   |
-| Arbitrum Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)           |
-| Berachain           | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                  |
-| Berachain Bepolia   | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)          |
+| Blockchain          | Contract Address                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ethereum Mainnet    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                        |
+| Ethereum Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                |
+| Ethereum Holesky    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://holesky.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                |
+| Ethereum Hoodi      | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://hoodi.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                  |
+| Base                | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://basescan.org/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                        |
+| Base Sepolia        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.basescan.org/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                |
+| Binance Smart Chain | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://bscscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                         |
+| Binance Testnet     | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.bscscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                 |
+| Optimism            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://optimistic.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)             |
+| Optimism Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia-optimism.etherscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)       |
+| Polygon             | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                     |
+| Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                |
+| Arbitrum            | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                         |
+| Arbitrum Sepolia    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://sepolia.arbiscan.io/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                 |
+| Berachain           | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                        |
+| Berachain Bepolia   | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.berascan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)                |
+| Avalanche C         | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://snowtrace.io/address/0xcEa43594f38316F0e01c161D8DaBDe0a07a1F512/contract/43114/code)         |
+| Avalanche C Fuji    | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://testnet.snowtrace.io/address/0xcEa43594f38316F0e01c161D8DaBDe0a07a1F512/contract/43113/code) |
 
 
 ## Foundry
