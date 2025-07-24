@@ -10,6 +10,10 @@ fi
 CONTRACT_ADDRESS=$1
 ETHERSCAN_API_KEY=$2
 
+echo "Verifying contract $CONTRACT_ADDRESS on Avalanche networks..."
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier-url 'https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan' --etherscan-api-key "verifyContract"
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier-url 'https://api.routescan.io/v2/network/testnet/evm/43113/etherscan' --etherscan-api-key "verifyContract"
+
 echo "Verifying contract $CONTRACT_ADDRESS on Berachain networks..."
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain berachain --verifier-api-key $ETHERSCAN_API_KEY --watch 
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain berachain-bepolia --verifier-api-key $ETHERSCAN_API_KEY --watch
