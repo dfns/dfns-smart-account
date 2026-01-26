@@ -3,7 +3,7 @@
 ## Introduction
 
 This smart contract is heavily inspired from the SafeLite example: https://github.com/5afe/safe-eip7702/blob/main/safe-eip7702-contracts/contracts/experimental/SafeLite.sol
-It was stripped from all unecessary logic to only keep the batch functionality.
+It was stripped from all unnecessary logic to only keep the batch functionality.
 It uses no dependency and rely on some assembly code to save gas usage.
 
 After deployment, this contract is intended to be called by the [dfns.co](https://dfns.co) WaaS. It will be used for the Fee Sponsor feature:
