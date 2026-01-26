@@ -60,8 +60,8 @@ const sponsor = '0x1234...'
 const nonce = await jsonRpcProvider.getStorage(walletBAddress, '0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000')
 const domain = { chainId, verifyingContract: walletBAddress }
 const encodedUserOps = encodeUserOps(userOps)
-const signedUserOps = keccak256(encodedUserOps)
-const message = { data: signedUserOps, nonce, sponsor }
+const hashedUserOps = keccak256(encodedUserOps)
+const message = { data: hashedUserOps, nonce, sponsor }
 const toSign = TypedDataEncoder.hash(domain, types, message)
 const userOpsSignature = sign(toSign) 
 ```
