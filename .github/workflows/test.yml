@@ -32,6 +32,11 @@ jobs:
           forge fmt --check
         id: fmt
 
+      - name: Check gas snapshot
+        run: |
+          forge snapshot --check
+        id: snapshot
+
       - name: Run Forge build
         run: |
           forge build --sizes
