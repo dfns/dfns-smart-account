@@ -55,8 +55,9 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
         /* solhint-disable no-inline-assembly */
         assembly ("memory-safe") {
             let length := mload(userOps)
+            let end := add(length, 0x20)
             let i := 0x20
-            for {} lt(i, length) {} {
+            for {} lt(i, end) {} {
                 let to := shr(0x60, mload(add(userOps, i)))
                 if iszero(to) {
                     // Revert with InvalidTarget() custom error selector
@@ -66,8 +67,8 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
                 let value := mload(add(userOps, add(i, 0x14)))
                 let dataLength := mload(add(userOps, add(i, 0x34)))
 
-                let totalLength := add(i, dataLength)
-                if gt(totalLength, length) {
+                let opEnd := add(i, add(0x54, dataLength))
+                if gt(opEnd, end) {
                     // Revert with OutOfBounds() custom error selector
                     mstore(0x00, 0xb4120f14) // selector for OutOfBounds()
                     revert(0x1c, 0x04)
@@ -80,7 +81,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
                     returndatacopy(0, 0, returndatasize())
                     revert(0, returndatasize())
                 }
-                i := add(i, add(0x54, dataLength))
+                i := opEnd
             }
         }
         /* solhint-enable no-inline-assembly */
@@ -93,12 +94,9 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
      * @return magicValue The ERC-1271 magic value (0x1626ba7e) if the signature is valid, 0x00000000 otherwise.
      */
     function isValidSignature(bytes32 hash, bytes memory signature) public view returns (bytes4 magicValue) {
+        if (signature.length != 64) return bytes4(0);
         (uint256 r, uint256 vs) = abi.decode(signature, (uint256, uint256));
-        bool ok = address(this) == hash.recover(bytes32(r), bytes32(vs));
-
-        assembly ("memory-safe") {
-            magicValue := mul(ok, hex"1626ba7e")
-        }
+        return address(this) == hash.recover(bytes32(r), bytes32(vs)) ? this.isValidSignature.selector : bytes4(0);
     }
 
     function _storage() private pure returns (Storage storage $) {
