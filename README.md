@@ -156,7 +156,7 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge create script/DfnsSmartAccount.sol:DfnsSmartAccount --rpc-url <your_rpc_url> --private-key <dummy_private_key>
+$ forge create src/DfnsSmartAccount.sol:DfnsSmartAccount --rpc-url <your_rpc_url> --private-key <dummy_private_key>
 ```
 
 This is a dry run, use a dummy private key as this is not the real deployment. After running the command, forge will output a Transaction with a Json format, copy the "input" field, and use the Dfns API to broadcast the transaction:
