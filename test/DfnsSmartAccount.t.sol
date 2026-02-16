@@ -57,6 +57,29 @@ contract DfnsSmartAccountTest is Test {
         assertEq(dfnsSmartAccount.getNonce(), 1);
     }
 
+    function test_handleOpsBatch() public {
+        address secondDestination = address(0xBEEF);
+        vm.deal(secondDestination, 0);
+
+        UserOperation[] memory userOperations = new UserOperation[](2);
+        userOperations[0] = UserOperation({to: RANDOM_DESTINATION, value: 1, data: ""});
+        userOperations[1] = UserOperation({to: secondDestination, value: 2, data: "0xdeadbeef"});
+
+        encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
+
+        uint256 nonce = dfnsSmartAccount.getNonce();
+        (r, vs) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+
+        uint256 randomDestBalanceBefore = RANDOM_DESTINATION.balance;
+
+        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+
+        assertEq(RANDOM_DESTINATION.balance, randomDestBalanceBefore + 1);
+        assertEq(secondDestination.balance, 2);
+        assertEq(dfnsSmartAccount.getNonce(), 1);
+    }
+
     function test_handleOpsWrongSponsor() public {
         assertEq(dfnsSmartAccount.getNonce(), 0);
         address otherSponsor = address(0xBEEF);
@@ -112,9 +135,58 @@ contract DfnsSmartAccountTest is Test {
         dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
     }
 
+    function test_handleOpsOutOfBoundsEdgeCase() public {
+        // Declare dataLength=10 but include 0 actual data bytes.
+        // Total encoded: 20 + 32 + 32 = 84 bytes (0x54), but claims 10 extra.
+        // Old bounds check missed this because it was 0x34 bytes too loose.
+        encodedUserOperations = abi.encodePacked(
+            RANDOM_DESTINATION,
+            uint256(1), // value
+            uint256(10) // claims 10 bytes of data, but none follow
+        );
+
+        uint256 nonce = dfnsSmartAccount.getNonce();
+        (r, vs) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+
+        vm.expectRevert(OutOfBounds.selector);
+        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+    }
+
     function test_sponsoreeCanReceiveEth() public {
         uint256 initialBalance = sponsoree.balance;
         payable(sponsoree).transfer(1 ether);
         assertEq(sponsoree.balance, initialBalance + 1 ether);
+    }
+
+    function test_isValidSignatureSuccess() public view {
+        bytes32 hash = keccak256("valid");
+        (bytes32 _r, bytes32 _vs) = vm.signCompact(sponsoreePrivateKey, hash);
+        bytes memory signature = abi.encode(_r, _vs);
+        bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
+        bytes4 expectedMagic = 0x1626ba7e;
+        // Should return ERC1271 magic value
+        assertEq(magic, expectedMagic);
+    }
+
+    function test_isValidSignatureInvalidLength() public view {
+        bytes32 hash = keccak256("valid");
+        // Signature too short (32 bytes instead of 64)
+        bytes memory shortSig = abi.encode(uint256(1));
+        assertEq(dfnsSmartAccount.isValidSignature(hash, shortSig), bytes4(0));
+
+        // Signature too long (96 bytes instead of 64)
+        bytes memory longSig = abi.encode(uint256(1), uint256(2), uint256(3));
+        assertEq(dfnsSmartAccount.isValidSignature(hash, longSig), bytes4(0));
+    }
+
+    function test_isValidSignatureFail() public view {
+        bytes32 hash = keccak256("invalid");
+        // Use a random signature that won't match
+        bytes memory signature = abi.encode(uint256(1), uint256(2));
+        bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
+        bytes4 expectedMagic = 0x00000000;
+        // Should return 0 for invalid signature
+        assertEq(magic, expectedMagic);
     }
 }
