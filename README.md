@@ -85,24 +85,24 @@ It is deployed on the following chains:
 
 | Blockchain          | Contract Address                                                                                                                              |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Arbitrum One        | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://arbiscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                     |
-| Arbitrum Sepolia    | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://sepolia.arbiscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)             |
-| Base                | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://basescan.org/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                    |
-| Base Sepolia        | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://sepolia.basescan.org/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)            |
-| Berachain           | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://berascan.com/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                    |
-| Berachain Bepolia   | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://testnet.berascan.com/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)            |
-| Binance Smart Chain | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://bscscan.com/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                     |
-| Binance Testnet     | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://testnet.bscscan.com/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)             |
-| Ethereum Mainnet    | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://etherscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                    |
-| Ethereum Hoodi      | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://hoodi.etherscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)              |
-| Ethereum Sepolia    | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://sepolia.etherscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)            |
-| Flow EVM            | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://evm.flowscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e?tab=contract)         |
-| Flow EVM Testnet    | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://evm-testnet.flowscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e?tab=contract) |
-| Optimism            | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://optimistic.etherscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)         |
-| Optimism Sepolia    | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://sepolia-optimism.etherscan.io/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)   |
-| Plasma              | [0xf5138ba9777a42f76437ecd5f3cdb96decd72b4e](https://plasmascan.to/address/0xf5138ba9777a42f76437ecd5f3cdb96decd72b4e#code)                   |
-| Plasma Testnet      | [0xa34e1e389097409aa65ff374af50b402e4a8f5c3](https://testnet.plasmascan.to/address/0xa34e1e389097409aa65ff374af50b402e4a8f5c3#code)           |
-| Polygon             | [0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e](https://polygonscan.com/address/0xf5138ba9777A42F76437Ecd5F3cDb96Decd72b4e#code)                 |
+| Arbitrum One        | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://arbiscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                     |
+| Arbitrum Sepolia    | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://sepolia.arbiscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)             |
+| Base                | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://basescan.org/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                    |
+| Base Sepolia        | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://sepolia.basescan.org/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)            |
+| Berachain           | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://berascan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                    |
+| Berachain Bepolia   | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://testnet.berascan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)            |
+| Binance Smart Chain | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://bscscan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                     |
+| Binance Testnet     | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://testnet.bscscan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)             |
+| Ethereum Mainnet    | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://etherscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                    |
+| Ethereum Hoodi      | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://hoodi.etherscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)              |
+| Ethereum Sepolia    | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://sepolia.etherscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)            |
+| Flow EVM            | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://evm.flowscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3?tab=contract)         |
+| Flow EVM Testnet    | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://evm-testnet.flowscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3?tab=contract) |
+| Optimism            | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://optimistic.etherscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)         |
+| Optimism Sepolia    | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://sepolia-optimism.etherscan.io/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)   |
+| Plasma              | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://plasmascan.to/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                   |
+| Plasma Testnet      | [0x79d0b54c67c55dc0ecd99ce425d740f2107ef543](https://testnet.plasmascan.to/address/0x79d0b54c67c55dc0ecd99ce425d740f2107ef543#code)           |
+| Polygon             | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://polygonscan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                 |
 | Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)            |
 
 
