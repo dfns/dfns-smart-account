@@ -94,9 +94,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
      * @return magicValue The ERC-1271 magic value (0x1626ba7e) if the signature is valid, 0x00000000 otherwise.
      */
     function isValidSignature(bytes32 hash, bytes memory signature) public view returns (bytes4 magicValue) {
-        if (signature.length != 64) return bytes4(0);
-        (uint256 r, uint256 vs) = abi.decode(signature, (uint256, uint256));
-        return address(this) == hash.recover(bytes32(r), bytes32(vs)) ? this.isValidSignature.selector : bytes4(0);
+        return address(this) == hash.recover(signature) ? this.isValidSignature.selector : bytes4(0);
     }
 
     function _storage() private pure returns (Storage storage $) {

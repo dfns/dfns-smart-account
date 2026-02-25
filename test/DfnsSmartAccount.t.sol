@@ -161,32 +161,36 @@ contract DfnsSmartAccountTest is Test {
 
     function test_isValidSignatureSuccess() public view {
         bytes32 hash = keccak256("valid");
-        (bytes32 _r, bytes32 _vs) = vm.signCompact(sponsoreePrivateKey, hash);
-        bytes memory signature = abi.encode(_r, _vs);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(sponsoreePrivateKey, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
         bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
-        bytes4 expectedMagic = 0x1626ba7e;
-        // Should return ERC1271 magic value
-        assertEq(magic, expectedMagic);
+        assertEq(magic, bytes4(0x1626ba7e));
     }
 
-    function test_isValidSignatureInvalidLength() public view {
+    function test_isValidSignatureInvalidLength() public {
         bytes32 hash = keccak256("valid");
-        // Signature too short (32 bytes instead of 64)
-        bytes memory shortSig = abi.encode(uint256(1));
-        assertEq(dfnsSmartAccount.isValidSignature(hash, shortSig), bytes4(0));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(sponsoreePrivateKey, hash);
 
-        // Signature too long (96 bytes instead of 64)
-        bytes memory longSig = abi.encode(uint256(1), uint256(2), uint256(3));
-        assertEq(dfnsSmartAccount.isValidSignature(hash, longSig), bytes4(0));
+        // 32 bytes (first 32 bytes of real signature)
+        bytes memory sig32 = abi.encodePacked(r);
+        vm.expectRevert();
+        dfnsSmartAccount.isValidSignature(hash, sig32);
+
+        // 64 bytes (first 64 bytes of real signature)
+        bytes memory sig64 = abi.encodePacked(r, s);
+        vm.expectRevert();
+        dfnsSmartAccount.isValidSignature(hash, sig64);
+
+        // 96 bytes (real signature padded to 96 bytes)
+        bytes memory sig96 = abi.encodePacked(r, s, v, bytes31(0));
+        vm.expectRevert();
+        dfnsSmartAccount.isValidSignature(hash, sig96);
     }
 
     function test_isValidSignatureFail() public view {
         bytes32 hash = keccak256("invalid");
-        // Use a random signature that won't match
-        bytes memory signature = abi.encode(uint256(1), uint256(2));
+        bytes memory signature = abi.encodePacked(bytes32(uint256(1)), bytes32(uint256(2)), uint8(27));
         bytes4 magic = dfnsSmartAccount.isValidSignature(hash, signature);
-        bytes4 expectedMagic = 0x00000000;
-        // Should return 0 for invalid signature
-        assertEq(magic, expectedMagic);
+        assertEq(magic, bytes4(0));
     }
 }
