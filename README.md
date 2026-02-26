@@ -103,7 +103,7 @@ It is deployed on the following chains:
 | Plasma              | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://plasmascan.to/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                   |
 | Plasma Testnet      | [0x79d0b54c67c55dc0ecd99ce425d740f2107ef543](https://testnet.plasmascan.to/address/0x79d0b54c67c55dc0ecd99ce425d740f2107ef543#code)           |
 | Polygon             | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://polygonscan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)                 |
-| Polygon Amoy        | [0xcea43594f38316f0e01c161d8dabde0a07a1f512](https://amoy.polygonscan.com/address/0xcea43594f38316f0e01c161d8dabde0a07a1f512#code)            |
+| Polygon Amoy        | [0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3](https://amoy.polygonscan.com/address/0xa34E1E389097409aA65Ff374Af50B402E4A8F5C3#code)            |
 
 
 ## Foundry
