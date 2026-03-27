@@ -1,0 +1,7 @@
+DfnsSmartAccountTest:test_handleOps() (gas: 91864)
+DfnsSmartAccountTest:test_handleOpsOutOfBounds() (gas: 77805)
+DfnsSmartAccountTest:test_handleOpsReplayProtection() (gas: 102090)
+DfnsSmartAccountTest:test_handleOpsWrongSignature() (gas: 38000)
+DfnsSmartAccountTest:test_handleOpsWrongSponsor() (gas: 39043)
+DfnsSmartAccountTest:test_handleOpsWrongTarget() (gas: 74965)
+DfnsSmartAccountTest:test_sponsoreeCanReceiveEth() (gas: 18188)

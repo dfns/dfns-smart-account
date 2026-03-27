@@ -3,7 +3,7 @@
 ## Introduction
 
 This smart contract is heavily inspired from the SafeLite example: https://github.com/5afe/safe-eip7702/blob/main/safe-eip7702-contracts/contracts/experimental/SafeLite.sol
-It was stripped from all unecessary logic to only keep the batch functionality.
+It was stripped from all unnecessary logic to only keep the batch functionality.
 It uses no dependency and rely on some assembly code to save gas usage.
 
 After deployment, this contract is intended to be called by the [dfns.co](https://dfns.co) WaaS. It will be used for the Fee Sponsor feature:
@@ -60,8 +60,8 @@ const sponsor = '0x1234...'
 const nonce = await jsonRpcProvider.getStorage(walletBAddress, '0x10ee8db8a0021e326896fcf9b44ce61becefe5f52e3dfd0bb294aee9b73bc000')
 const domain = { chainId, verifyingContract: walletBAddress }
 const encodedUserOps = encodeUserOps(userOps)
-const signedUserOps = keccak256(encodedUserOps)
-const message = { data: signedUserOps, nonce, sponsor }
+const hashedUserOps = keccak256(encodedUserOps)
+const message = { data: hashedUserOps, nonce, sponsor }
 const toSign = TypedDataEncoder.hash(domain, types, message)
 const userOpsSignature = sign(toSign) 
 ```
