@@ -9,6 +9,8 @@ import {UserOperation, DfnsTestUtils} from "./utils/DfnsTestUtils.sol";
 error InvalidSignature();
 error InvalidTarget();
 error OutOfBounds();
+error NonceAlreadyUsed();
+error NonceTooFar();
 
 contract DfnsSmartAccountTest is Test {
     DfnsSmartAccount public dfnsSmartAccount;
@@ -46,15 +48,13 @@ contract DfnsSmartAccountTest is Test {
 
         encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
 
-        uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) =
-            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, 0, sponsoree, sponsoreePrivateKey, sponsor);
     }
 
     function test_handleOps() public {
-        assertEq(dfnsSmartAccount.getNonce(), 0);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
-        assertEq(dfnsSmartAccount.getNonce(), 1);
+        assertFalse(dfnsSmartAccount.isNonceUsed(0));
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
+        assertTrue(dfnsSmartAccount.isNonceUsed(0));
     }
 
     function test_handleOpsBatch() public {
@@ -67,42 +67,68 @@ contract DfnsSmartAccountTest is Test {
 
         encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
 
-        uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) =
-            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, 0, sponsoree, sponsoreePrivateKey, sponsor);
 
         uint256 randomDestBalanceBefore = RANDOM_DESTINATION.balance;
 
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
 
         assertEq(RANDOM_DESTINATION.balance, randomDestBalanceBefore + 1);
         assertEq(secondDestination.balance, 2);
-        assertEq(dfnsSmartAccount.getNonce(), 1);
+        assertTrue(dfnsSmartAccount.isNonceUsed(0));
     }
 
     function test_handleOpsWrongSponsor() public {
-        assertEq(dfnsSmartAccount.getNonce(), 0);
         address otherSponsor = address(0xBEEF);
         vm.deal(otherSponsor, 100 ether);
         vm.prank(otherSponsor);
         vm.expectRevert(InvalidSignature.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
-        assertEq(dfnsSmartAccount.getNonce(), 0);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
+        assertFalse(dfnsSmartAccount.isNonceUsed(0));
     }
 
     function test_handleOpsWrongSignature() public {
-        assertEq(dfnsSmartAccount.getNonce(), 0);
         vm.expectRevert(InvalidSignature.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs + 1);
-        assertEq(dfnsSmartAccount.getNonce(), 0);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs + 1);
+        assertFalse(dfnsSmartAccount.isNonceUsed(0));
     }
 
     function test_handleOpsReplayProtection() public {
-        assertEq(dfnsSmartAccount.getNonce(), 0);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
-        vm.expectRevert(InvalidSignature.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
-        assertEq(dfnsSmartAccount.getNonce(), 1);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
+        vm.expectRevert(NonceAlreadyUsed.selector);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
+        assertTrue(dfnsSmartAccount.isNonceUsed(0));
+    }
+
+    function test_handleOpsOutOfOrderNonces() public {
+        // Use nonce 5 first (bit 5 of word 0).
+        (uint256 r5, uint256 vs5) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, 5, sponsoree, sponsoreePrivateKey, sponsor);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 5, r5, vs5);
+        assertTrue(dfnsSmartAccount.isNonceUsed(5));
+        assertFalse(dfnsSmartAccount.isNonceUsed(0));
+
+        // Then use nonce 0 — should still work.
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
+        assertTrue(dfnsSmartAccount.isNonceUsed(0));
+    }
+
+    function test_handleOpsCrossWordNonce() public {
+        // Nonce 256 lives in word 1, bit 0 — array must grow from length 0 to 2.
+        uint256 nonce = 256;
+        (uint256 rN, uint256 vsN) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        dfnsSmartAccount.handleOps(encodedUserOperations, nonce, rN, vsN);
+        assertTrue(dfnsSmartAccount.isNonceUsed(nonce));
+    }
+
+    function test_handleOpsNonceTooFar() public {
+        // Growth limit is 10 words; from length 0, word 10 (nonce 2560) is one past the limit.
+        uint256 nonce = 256 * 10;
+        (uint256 rN, uint256 vsN) =
+            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        vm.expectRevert(NonceTooFar.selector);
+        dfnsSmartAccount.handleOps(encodedUserOperations, nonce, rN, vsN);
     }
 
     function test_handleOpsWrongTarget() public {
@@ -111,12 +137,10 @@ contract DfnsSmartAccountTest is Test {
 
         encodedUserOperations = DfnsTestUtils.encodeOperations(userOperations);
 
-        uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) =
-            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, 0, sponsoree, sponsoreePrivateKey, sponsor);
 
         vm.expectRevert(InvalidTarget.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
     }
 
     function test_handleOpsOutOfBounds() public {
@@ -127,12 +151,10 @@ contract DfnsSmartAccountTest is Test {
             "0x12345678"
         );
 
-        uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) =
-            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, 0, sponsoree, sponsoreePrivateKey, sponsor);
 
         vm.expectRevert(OutOfBounds.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
     }
 
     function test_handleOpsOutOfBoundsEdgeCase() public {
@@ -145,12 +167,10 @@ contract DfnsSmartAccountTest is Test {
             uint256(10) // claims 10 bytes of data, but none follow
         );
 
-        uint256 nonce = dfnsSmartAccount.getNonce();
-        (r, vs) =
-            DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
+        (r, vs) = DfnsTestUtils.generateSignature(vm, encodedUserOperations, 0, sponsoree, sponsoreePrivateKey, sponsor);
 
         vm.expectRevert(OutOfBounds.selector);
-        dfnsSmartAccount.handleOps(encodedUserOperations, r, vs);
+        dfnsSmartAccount.handleOps(encodedUserOperations, 0, r, vs);
     }
 
     function test_sponsoreeCanReceiveEth() public {

@@ -7,7 +7,7 @@ import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Recei
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 /**
  * @title DfnsSmartAccount - This contract support batch execution of transactions.
- * The only storage is a nonce to prevent replay attacks.
+ * The only storage is a nonce bitmap to prevent replay attacks, allowing nonces to be consumed out of order.
  * The contract is intended to be used with EIP-7702 where EOA delegates to this contract.
  */
 
@@ -15,7 +15,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
     using ECDSA for bytes32;
 
     struct Storage {
-        uint256 nonce;
+        uint256[] nonces;
     }
 
     // keccak256("DfnsSmartAccount") & (~0xff)
@@ -24,21 +24,23 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
     bytes32 private constant _DOMAIN_TYPEHASH = 0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
     // keccak256("HandleOps(bytes32 data,uint256 nonce,address sponsor)")
     bytes32 private constant _HANDLEOPS_TYPEHASH = 0x4d45d6aca00518e5f826ef561e48d49260fb16644409228c5e739cb8f3c7c68e;
+    // Maximum number the nonce array can grow by in a single call.
+    uint256 private constant _MAX_NONCE_GROWTH = 10;
 
     error InvalidSignature();
     error InvalidTarget();
     error OutOfBounds();
+    error NonceAlreadyUsed();
+    error NonceTooFar();
 
     /**
      * @dev Sends multiple transactions with signature validation and reverts all if one fails.
      * @param userOps Encoded User Ops.
+     * @param nonce Unique nonce; bit `nonce % 256` of `nonces[nonce / 256]` must be unset and is set on success.
      * @param r The r part of the signature.
      * @param vs The v and s part of the signature.
      */
-    function handleOps(bytes memory userOps, uint256 r, uint256 vs) public payable {
-        Storage storage $ = _storage();
-        uint256 nonce = $.nonce;
-
+    function handleOps(bytes memory userOps, uint256 nonce, uint256 r, uint256 vs) public payable {
         // Calculate the hash of transactions data and nonce for signature verification
         bytes32 domainSeparator = keccak256(abi.encode(_DOMAIN_TYPEHASH, block.chainid, address(this)));
         bytes32 structHash = keccak256(abi.encode(_HANDLEOPS_TYPEHASH, keccak256(userOps), nonce, msg.sender));
@@ -47,10 +49,7 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
         // Verify the signature
         require(address(this) == digest.recover(bytes32(r), bytes32(vs)), InvalidSignature());
 
-        // Update nonce for the sender to prevent replay attacks
-        unchecked {
-            $.nonce = nonce + 1;
-        }
+        _useNonce(nonce);
 
         /* solhint-disable no-inline-assembly */
         assembly ("memory-safe") {
@@ -97,14 +96,54 @@ contract DfnsSmartAccount is IERC1155Receiver, IERC721Receiver, IERC1271 {
         return address(this) == hash.recover(signature) ? this.isValidSignature.selector : bytes4(0);
     }
 
+    /**
+     * @dev Marks `nonce` as used. Reverts if it was already used or if the array would need
+     * to grow by more than `_MAX_NONCE_GROWTH` words to fit the nonce.
+     */
+    function _useNonce(uint256 nonce) internal {
+        Storage storage $ = _storage();
+        uint256 positionInArray = nonce >> 8;
+        uint256 mask = 1 << (nonce & 0xff);
+        uint256 length = $.nonces.length;
+        if (length <= positionInArray) {
+            require(positionInArray < length + _MAX_NONCE_GROWTH, NonceTooFar());
+            // Bump array length in a single SSTORE; element slots default to zero.
+            assembly ("memory-safe") {
+                sstore(_STORAGE, add(positionInArray, 1))
+            }
+        }
+        uint256 word = $.nonces[positionInArray];
+        require(word & mask == 0, NonceAlreadyUsed());
+        $.nonces[positionInArray] = word | mask;
+    }
+
     function _storage() private pure returns (Storage storage $) {
         assembly ("memory-safe") {
             $.slot := _STORAGE
         }
     }
 
-    function getNonce() external view returns (uint256) {
-        return _storage().nonce;
+    function isNonceUsed(uint256 nonce) external view returns (bool) {
+        Storage storage $ = _storage();
+        uint256 positionInArray = nonce >> 8;
+        if (positionInArray >= $.nonces.length) return false;
+        return ($.nonces[positionInArray] & (1 << (nonce & 0xff))) != 0;
+    }
+
+    /**
+     * @dev Returns the next nonce to use, found in the last entry of the array.
+     * If that entry is fully consumed, returns the first nonce of the next (not-yet-allocated) word.
+     */
+    function nextNonce() external view returns (uint256) {
+        Storage storage $ = _storage();
+        uint256 length = $.nonces.length;
+        if (length == 0) return 0;
+        uint256 lastIndex = length - 1;
+        uint256 word = $.nonces[lastIndex];
+        for (uint256 b = 0; b < 256; b++) {
+            if (word & (1 << b) == 0) return (lastIndex << 8) | b;
+        }
+        return length << 8;
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
