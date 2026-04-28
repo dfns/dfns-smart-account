@@ -123,8 +123,9 @@ contract DfnsSmartAccountTest is Test {
     }
 
     function test_handleOpsNonceTooFar() public {
-        // Growth limit is 10 words; from length 0, word 10 (nonce 2560) is one past the limit.
-        uint256 nonce = 256 * 10;
+        // From an empty array, the first nonce must land within the first `_MAX_NONCE_GROWTH` words.
+        // Word index = _MAX_NONCE_GROWTH (currently 4) is one past the limit.
+        uint256 nonce = 256 * 4;
         (uint256 rN, uint256 vsN) =
             DfnsTestUtils.generateSignature(vm, encodedUserOperations, nonce, sponsoree, sponsoreePrivateKey, sponsor);
         vm.expectRevert(NonceTooFar.selector);
