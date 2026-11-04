@@ -44,6 +44,10 @@ echo "Verifying contract $CONTRACT_ADDRESS on BSC networks..."
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain bsc --verifier-api-key $ETHERSCAN_API_KEY --watch
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain bsc-testnet --verifier-api-key $ETHERSCAN_API_KEY --watch
 
+echo "Verifying contract $CONTRACT_ADDRESS on Monad networks..."
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain 143 --verifier-api-key $ETHERSCAN_API_KEY --watch
+forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain 10143 --verifier-api-key $ETHERSCAN_API_KEY --watch
+
 echo "Verifying contract $CONTRACT_ADDRESS on Plasma networks..."
 forge verify-contract $CONTRACT_ADDRESS ./src/DfnsSmartAccount.sol:DfnsSmartAccount --verifier etherscan --chain plasma --verifier-api-key $ETHERSCAN_API_KEY --watch
 
